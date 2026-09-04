@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    // Node environment
+    "lib": ["ES2023"],
+    "types": ["node"],
+
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["vite.config.ts"]
+}
