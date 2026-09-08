@@ -5,7 +5,9 @@
   color-scheme: light dark;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -18,7 +20,9 @@ body {
   color: var(--ink);
 }
 
-.reading { text-align: center; }
+.reading {
+  text-align: center;
+}
 
 .reading__value {
   display: block;
@@ -28,7 +32,10 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.reading__unit { color: var(--muted); font-size: 1rem; }
+.reading__unit {
+  color: var(--muted);
+  font-size: 1rem;
+}
 
 .reading__status {
   display: block;
@@ -46,4 +53,21 @@ button {
   padding: 0.6rem 1.2rem;
   font: inherit;
   cursor: pointer;
+}
+
+/* Targeting the data attribute set by render(). */
+.reading[data-band="very-low"] .reading__value {
+  color: #2e7d66;
+}
+.reading[data-band="low"] .reading__value {
+  color: #4e8f5c;
+}
+.reading[data-band="moderate"] .reading__value {
+  color: #b08430;
+}
+.reading[data-band="high"] .reading__value {
+  color: #b8642c;
+}
+.reading[data-band="very-high"] .reading__value {
+  color: #a63d2f;
 }

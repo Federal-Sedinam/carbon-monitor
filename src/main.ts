@@ -6,67 +6,75 @@ type ViewState =
   | { status: 'loading' }
   | { status: 'ready'; reading: Reading }
   | { status: 'failed'; message: string }
-  
 
 const app = document.querySelector('#app')
 if (!app) throw new Error('No #app element found in index.html')
 
+const valueEl  = document.createElement('span')
+const unitEl   = document.createElement('span')
+const statusEl = document.createElement('span')
+const retryEl  = document.createElement('button')
+
+valueEl.className  = 'reading__value'
+unitEl.className   = 'reading__unit'
+unitEl.textContent = 'gCO₂/kWh'
+statusEl.className = 'reading__status'
+retryEl.type       = 'button'
+retryEl.textContent = 'Try again'
+
+const card = document.createElement('div')
+card.className = 'reading'
+card.append(valueEl, unitEl, statusEl, retryEl)
+app.append(card)
+
 let state: ViewState = { status: 'idle' }
 
-// These are written as `const name = () => {}` rather than
-// `function name() {}`. That is not a style choice — it is required
-// here, and the box below the file explains exactly why.
 const render = (): void => {
+  // hidden is a real property — cleaner than juggling style.display,
+  // and it correctly hides the element from screen readers too.
+  retryEl.hidden = state.status !== 'failed'
+  unitEl.hidden  = state.status !== 'ready'
+
   switch (state.status) {
     case 'idle':
     case 'loading':
-      app.innerHTML = `<p class="reading">Loading…</p>`
+      valueEl.textContent = '—'
+      statusEl.textContent = 'Loading…'
+      delete card.dataset.band
       return
 
     case 'failed':
-      // TypeScript KNOWS `message` exists here, and knows `reading`
-      // does not. Try typing state.reading — it's a compile error.
-      app.innerHTML = `
-        <p class="reading">
-          ${state.message}
-          <button id="retry" type="button">Try again</button>
-        </p>`
+      valueEl.textContent = '—'
+      // textContent, so this is displayed as literal characters.
+      // Even if the message contained HTML, it could not run.
+      statusEl.textContent = state.message
+      delete card.dataset.band
       return
 
     case 'ready':
-      app.innerHTML = `
-        <p class="reading">
-          <span class="reading__value">${state.reading.value}</span>
-          <span class="reading__unit">gCO₂/kWh</span>
-          <span class="reading__status">
-            ${state.reading.basis === 'measured'
-              ? 'Measured'
-              : "Forecast — this period hasn't settled yet"}
-          </span>
-        </p>`
+      valueEl.textContent = String(state.reading.value)
+      statusEl.textContent = state.reading.basis === 'measured'
+        ? 'Measured'
+        : "Forecast — this period hasn't settled yet"
+      // A data attribute, not a class name. It holds one value with
+      // no parsing rules, so the space bug simply cannot recur —
+      // and CSS can still target it with [data-band="very-low"].
+      card.dataset.band = state.reading.band
       return
 
     default: {
-      // The exhaustiveness guard. Explained right below — this is the
-      // line that makes the compiler tell you about a missing case.
       const unhandled: never = state
       throw new Error(`Unhandled state: ${JSON.stringify(unhandled)}`)
     }
   }
 }
 
-// One place owns "state changed → redraw". Nothing else touches the
-// DOM. That single rule is what keeps this app understandable as it
-// grows from one view to three.
 const setState = (next: ViewState): void => {
   state = next
   render()
 }
 
 const load = async (): Promise<void> => {
-  // Every path assigns a COMPLETE state. There is no way to
-  // leave a stale field behind, because there are no fields to
-  // leave behind — the whole value is replaced each time.
   setState({ status: 'loading' })
   try {
     setState({ status: 'ready', reading: await fetchCurrentIntensity() })
@@ -79,8 +87,8 @@ const load = async (): Promise<void> => {
   }
 }
 
-app.addEventListener('click', (event) => {
-  if ((event.target as HTMLElement).id === 'retry') void load()
-})
+// The listener is attached to a button that is never destroyed,
+// so it never needs re-attaching. 
+retryEl.addEventListener('click', () => void load())
 
 void load()

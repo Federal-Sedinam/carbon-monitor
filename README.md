@@ -10,9 +10,9 @@ Data from the [National Grid Carbon Intensity API](https://carbonintensity.org.u
 
 ## Why no framework?
 
-To understand what a framework actually does for you.
+To understand what a framework actually does.
 
-Going without one means making — and writing down — every decision React would otherwise make silently: how a component is defined, when it updates, who owns state, how the DOM gets cleaned up. That's the point of the exercise.
+Going without one means making and writing down every decision a framework would  make silently: how a component is defined, when it updates, who owns state, how the DOM gets cleaned up. 
 
 ## What it does today
 
@@ -26,7 +26,7 @@ Going without one means making — and writing down — every decision React wou
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev
 ```
 
 | Script | Does |
