@@ -1,5 +1,7 @@
 # Carbon Monitor
 
+**[Live demo →](https://carbon-monitor-federal.netlify.app)**
+
 A live view of how much CO₂ the Great Britain electricity grid is emitting right now. Built with Vite and TypeScript — **no framework**.
 
 Data from the [National Grid Carbon Intensity API](https://carbonintensity.org.uk/).
