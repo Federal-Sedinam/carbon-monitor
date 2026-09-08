@@ -20,7 +20,7 @@ export interface Reading {
   readonly to: Date;
 }
 
-export async function fetchCurrentIntensity() {
+export async function fetchCurrentIntensity(): Promise<Reading> {
   const body = await getJson("https://api.carbonintensity.org.uk/intensity");
 
   const parsed = body as IntensityResponse;
