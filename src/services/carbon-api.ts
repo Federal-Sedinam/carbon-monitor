@@ -1,25 +1,40 @@
-
-import { getJson } from '@/lib/http'
+import { getJson } from "@/lib/http";
 
 interface IntensityResponse {
   data: {
-    from: string
-    to: string
+    from: string;
+    to: string;
     intensity: {
-      forecast: number
-      actual: number | null
-      index: string
-    }
-  }[]
+      forecast: number;
+      actual: number | null;
+      index: string;
+    };
+  }[];
+}
+
+export interface Reading {
+  readonly value: number;
+  readonly basis: "measured" | "forecast";
+  readonly index: string;
+  readonly from: Date;
+  readonly to: Date;
 }
 
 export async function fetchCurrentIntensity() {
-  const body = await getJson('https://api.carbonintensity.org.uk/intensity')
+  const body = await getJson("https://api.carbonintensity.org.uk/intensity");
 
-  const parsed = body as IntensityResponse
+  const parsed = body as IntensityResponse;
 
-  const period = parsed.data[0]
-  if (!period) throw new Error('The API returned no periods')
+  const period = parsed.data[0];
+  if (!period) throw new Error("The API returned no periods");
 
-  return period
+  const { actual, forecast, index } = period.intensity;
+
+  return {
+    value: actual ?? forecast,
+    basis: actual === null ? "forecast" : "measured",
+    index,
+    from: new Date(period.from),
+    to: new Date(period.to),
+  };
 }

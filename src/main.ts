@@ -6,12 +6,15 @@ const app = document.querySelector("#app")!;
 app.innerHTML = `<p class="reading">Loading…</p>`;
 
 try {
-  const period = await fetchCurrentIntensity();
+  const reading = await fetchCurrentIntensity();
 
   app.innerHTML = `
     <p class="reading">
-      <span class="reading__value">${period.intensity.actual}</span>
+      <span class="reading__value">${reading.value}</span>
       <span class="reading__unit">gCO₂/kWh</span>
+      <span class="reading__status">
+        ${reading.basis === "measured" ? "Measured" : "Forecast — this period hasn't settled yet"}
+      </span>
     </p>
   `;
 } catch (error) {
